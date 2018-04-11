@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Prueba Ji Cuadrado/ Prueba K-S
+	</title>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/series-label.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script src="https://code.highcharts.com/modules/export-data.js"></script>	
+	<script type="text/javascript">
+		var puntoBCtrl = (function(){
+			//variables globales para mantener el estado
+			var cantNum,cantInter,anchoInt;
+			var arrayFrecuencias;
+			var numAleatorios;
+
+			var setVariables = function(){
+				cantNum= parseInt(document.getElementById('cantNum').value);
+				cantInter= parseInt(document.getElementById('cantInter').value);
+				anchoInt = parseFloat((1/cantInter).toFixed(4));
+				numAleatorios=[];
+				arrayFrecuencias=[];
+			};
+
+			/*
+			genera n números aleatorios guardandolos en un array
+			*/
+			var generarNumerosAleatorios = function(n){				
+				for (var i =0; i < n; i++) {
+					numAleatorios.push(parseFloat(Math.random().toFixed(4)));
+				}				
+			}
+
+			/*
+			Crea un array en donde cada posicion i representa el intervalo i+1
+			y se guarda la frecuencia de ese intervalo
+			Ejemplo
+				arrayFrecuencias[0]=3
+				significa que 3 números aleatorios cayeron dentro el intervalo 1 (i+1)
+			*/
+			var armarIntervalos=function(cantNum,cantInter){				
+				for(var i=0;i<cantInter;i++){					
+					arrayFrecuencias.push(0);
+				}				
+			};
+
+			/*
+			carga las frecuencias en los intervalos
+			*/
+			var cargarFrecuencias = function(){
+				for (var i = numAleatorios.length - 1; i >= 0; i--) {
+					var intervalo = calcularIntervalo(numAleatorios[i],arrayFrecuencias.length,anchoInt);
+					//actualizo la frecuencia en ese intervalo
+					arrayFrecuencias[intervalo]=arrayFrecuencias[intervalo]+1;
+				}
+			}
+
+			/**
+			* Calcula el intervalo en donde pertenece un numero aleatorio
+			*
+			**/
+			var calcularIntervalo = function(num,numIntervalos,anchoInt){
+				//La primera vez
+				var limiteSuperior = anchoInt;
+				for(var i=0;i<numIntervalos;i++){					
+					if(num<limiteSuperior){
+						//esta dentro el intervalo i
+						return i;
+					}
+					//el limite superior del siguiente intervalo
+					limiteSuperior+=anchoInt;
+				}
+				return i++;
+			};
+
+
+			var main = function(){
+
+				var btnPrueba = document.getElementById('btnPrueba');
+				btnPrueba.onclick= function(){
+					setVariables();					
+					
+					generarNumerosAleatorios(cantNum);
+					armarIntervalos(cantNum,cantInter);
+					cargarFrecuencias();
+					console.log(numAleatorios);
+					console.log(arrayFrecuencias);
+					graficar();
+				};
+				
+
+
+			};
+
+			var graficar = function(){
+				Highcharts.chart('histograma', {
+				    chart: {
+				        type: 'column'
+				    },
+				    title: {
+				        text: 'Histograma'
+				    },
+				    xAxis: {
+				        gridLineWidth: 1,
+				        type:'category',
+				    },
+				    yAxis: [{
+				        title: {
+				            text: 'Frecuencia'
+				        }
+				    }, {
+				        opposite: true,
+				        title: {
+				            text: 'Frecuencia'
+				        }
+				    }],
+				    series: [{
+				        name: 'Frecuencia',
+				        type: 'column',
+				        data: (function(){
+				        	var data = [];
+
+				        	for (var i = 0; i < arrayFrecuencias.length; i++) {
+				        		//data.push([i*anchoInt,arrayFrecuencias[i]]);		        		
+				        		data.push({
+				        			"name": (i*anchoInt).toFixed(4),
+				        			"y":arrayFrecuencias[i],
+				        		})
+				        	}
+
+				        	return data;
+				        }()),
+				        pointPadding: 0,
+				        groupPadding: 0,
+				        pointPlacement: 'between'
+				    }
+				    ]
+				});
+			}
+
+			return {
+				main:main,
+			}
+		}());		
+
+		window.onload = function(){
+			puntoBCtrl.main();
+		};
+	</script>
+</head>
+<body>
+	<h1>Prueba Ji Cuadrado/ Prueba K-S</h1>
+	<div>
+		<label>Cantidad números:</label>
+		<input type="text" name="cantNum" id="cantNum">		
+	</div>
+	<div>
+		<label>Cantidad intervalos:</label>
+		<input type="text" name="cantInter" id="cantInter">
+	</div>
+	<div>
+		<button id="btnPrueba">Realizar prueba</button>
+	</div>
+	<div id="histograma">
+
+	</div>
+</body>
+</html>

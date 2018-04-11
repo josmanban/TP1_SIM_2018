@@ -1,0 +1,179 @@
+<html>  
+    <head>
+        <script>
+        var tp1Controller = (function(){            
+            var metodo,xo,a,m,c,xi,i;
+            var primeraVez=true;
+
+            var tabla = document.getElementById('tablaTp');
+            
+            var main = function(){
+                setVariables();
+                var btnGenerar = document.getElementById("generar");                
+                btnGenerar.onclick = function(){                    
+                    metodo = document.getElementById("metodo").value;
+                    if(primeraVez==true){
+                        setVariables();
+                    }                   
+                    primeraVez=false;
+                    generarNumerosAleatorios();
+                };
+
+                var btnGenerarSiguiente = document.getElementById("generarSiguente");
+                btnGenerarSiguiente.onclick = function(){
+                    metodo = document.getElementById("metodo").value;
+                    if(primeraVez==true){
+                        setVariables();}
+                    primeraVez=false;
+                    var ri = generarNumeroAleatorio();
+                    addFilaTabla(i,xi,ri);
+
+                };
+            }
+
+            var setVariables = function(){
+                xo = getXo();
+                a=getA();
+                m=getM();
+                c=getC();
+                xi=xo;
+                i=0;
+            }
+
+            var limpiarTabla = function(){
+                var tBody = document.getElementById('tablaTpBody');
+                tBody.innerHTML = "";
+            }
+
+            var resetVariables = function(){
+                xo=0;
+                a=0;
+                g=0;
+                c=0;
+                xi=0;
+                i=0;
+            }
+
+            var limpiarCampos = function(){
+                
+            }
+
+            var getXo= function(){
+                var xo = document.getElementById("xo").value;
+                return parseInt(xo);
+            };
+
+            var getA= function(){
+                var a = document.getElementById("a").value;
+                return parseInt(a);
+            };
+
+            var getC= function(){
+                var c = document.getElementById("c").value;
+                return parseInt(c);
+            };
+            var getM= function(){
+                var m = document.getElementById("m").value;
+                return parseInt(m);
+            };            
+
+            var calcularXi = function(a,xi,c,m){                
+                var xii= ((a*xi)+c)%(m);                
+                return xii;             
+            };
+
+            var calcularRi = function(xi,m){                
+                var ri = xi/(m);              
+                return ri;
+            };
+
+            var generarNumerosAleatorios = function(){
+                for (var j = 0; j < 20; j++) {
+                    var ri = generarNumeroAleatorio();
+                    console.log(i+' - '+xi+ ' - '+ri);
+                    addFilaTabla(i,xi,ri);
+                };
+            }
+
+            var generarNumeroAleatorio = function(){
+                var xii = calcularXi(
+                        a,
+                        xi,
+                        metodo=="1"?c:0,                        
+                        m
+                    );
+                var ri = calcularRi(xii,m);
+                xi=xii;
+                i=i+1;
+                return ri;
+            };
+
+            var addFilaTabla = function(i,xi,ri){
+                var tBody = document.getElementById('tablaTpBody');
+                var row = document.createElement('tr');
+                var c1= document.createElement('td');
+                var c2= document.createElement('td');
+                var c3= document.createElement('td');
+                c1.innerHTML=i;             
+                c2.innerHTML=xi;
+                c3.innerHTML=ri;
+
+                row.appendChild(c1);
+                row.appendChild(c2);
+                row.appendChild(c3);
+                tBody.appendChild(row);
+            }
+            
+                
+            return {
+                generarNumerosAleatorios : generarNumerosAleatorios,
+                main:main,
+                holaMundo : function(){alert('holaMundo');}
+            }
+
+
+        }());
+    
+        window.onload=function(){
+            tp1Controller.main();
+        }           
+                
+        </script>
+    </head>
+    <body>
+    <label>Metodo:</label>
+    <select id="metodo">
+    <option value="1">Congruencial Mixto</option>
+    <option value="2">Congruencial Multiplicativo</option>
+    </select>
+    <div>
+    <label>Xo:</label>
+    <input name="xo" id="xo"></input>
+    </div><div>
+    <label>a:</label>
+    <input name="a" id="a"></input> 
+    </div><div>
+    <label>c:</label>
+    <input name="c" id="c"></input>
+    </div><div>
+    <label>m:</label>
+    <input name="m" id="m"></input> 
+    </div><div>
+    </div>
+    <div>
+    <button id="generar">Generar</button>
+    </div>
+    <div>
+    <button id="generarSiguente">Generar siguiente número</button>
+    </div>
+    <table id="tablaTp">
+        <thead>
+            <th>i</th>
+            <th>Xi</th>
+            <th>Ri</th>
+        </thead>
+        <tbody id="tablaTpBody">
+        </tbody>
+    </table>    
+    </body>
+</html>
